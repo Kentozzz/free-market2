@@ -81,3 +81,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 end
 
+private
+def check_recaptcha
+  redirect_to new_user_registration_path unless verify_recaptcha
+end
