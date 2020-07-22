@@ -4,18 +4,33 @@ class ItemsController < ApplicationController
   before_action :user_is_not_seller, only: [:edit, :update, :destroy]
   
   def new
+    @item = Item.new
+    3.times do
+      @item.images.build
+    end
     render layout: 'no_menu' # レイアウトファイルを指定
   end
 
   def edit
+    @item.images.build
     render layout: 'no_menu' # レイアウトファイル指定
   end
 
-  def update
-    if @item.update(item_params)
-      redirect_to root_path, notice: "商品の編集が完了しました。"
+  def create
+    @item = Item.new(item_params)
+    if @item.save
+      redirect_to root_path, notice: "出品に成功しました"
     else
-      render layout: 'no_menu', action: :edit
+      redirect_to new_item_path, alert: @item.errors.full_messages  ## ここを変更
+    end
+  end
+  
+  def update
+    @item = Item.find(params[:id])
+    if @item.update(item_params)
+      redirect_to root_path, notice: "出品に成功しました"
+    else
+      redirect_to edit_item_path(@item), alert: @item.errors.full_messages ## ここを変更
     end
   end
 
@@ -43,6 +58,7 @@ class ItemsController < ApplicationController
       :delivery_days,
       :prefecture_id,
       :category_id
+      image_attributes: [:src, :id, :_destroy]
       ).merge(seller_id: current_user.id)
   end
 
