@@ -14,8 +14,7 @@ Rails.application.routes.draw do
   end
 
   resources :users, only: [:show]
-
-  resources :items, only: [:index, :new, :show, :edit]  do
+  resources :items, only: [:index, :new, :create, :show, :edit, :update, :destroy]  do
     member do
       get "purchase_confirmation"
     end
@@ -25,5 +24,5 @@ Rails.application.routes.draw do
   end
   resources :categories, only: [:index, :show]
   resources :cards, only: [:index, :new]
-
+end
 end
