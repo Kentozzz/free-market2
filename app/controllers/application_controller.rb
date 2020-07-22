@@ -1,7 +1,7 @@
 class ApplicationController < ActionController::Base
   before_action :basic_auth, if: :production?
   before_action :configure_permitted_paramaters, if: :devise_controller? ## 追加
-
+  before_action :authenticate_user!
   private
   def after_sign_in_path_for(resource)
     user_path(resource)

@@ -21,6 +21,7 @@ class ItemsController < ApplicationController
     if @item.save
       redirect_to root_path, notice: "出品に成功しました"
     else
+      render layout: 'no_menu', template: 'items/new' # レイアウトファイル指定
       redirect_to new_item_path, alert: @item.errors.full_messages  ## ここを変更
     end
   end
@@ -46,6 +47,7 @@ class ItemsController < ApplicationController
     render layout: 'no_menu' # レイアウトファイル指定
   end
 
+
   private
   def item_params
     params.require(:item).permit(
@@ -69,5 +71,4 @@ class ItemsController < ApplicationController
   def user_is_not_seller
     redirect_to root_path, alert: "あなたは出品者ではありません" unless @item.seller_id == current_user.id
   end
-
 end
