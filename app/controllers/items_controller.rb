@@ -1,8 +1,24 @@
 class ItemsController < ApplicationController
-  skip_before_action :authenticate_user!, only: [:index]
-  before_action :set_item, only: [:edit, :update, :destroy]
+  skip_before_action :authenticate_user!, only: [:index, :show]
+  before_action :set_item, only: [:show, :edit, :update, :destroy]
   before_action :user_is_not_seller, only: [:edit, :update, :destroy]
   
+  def index
+    ladies_category = Category.find_by(name: "レディース")
+    mens_category = Category.find_by(name: "メンズ")
+    kids_category = Category.find_by(name: "ベビー・キッズ")
+
+    ladies_items = Item.search_by_categories(ladies_category.subtree).new_items
+    mens_items = Item.search_by_categories(mens_category.subtree).new_items
+    kids_items = Item.search_by_categories(kids_category.subtree).new_items
+
+    @new_items_arrays = [
+       {category: ladies_category, items: ladies_items},
+       {category: mens_category, items: mens_items},
+       {category: kids_category, items: kids_items}
+      ]
+    end
+
   def new
     @item = Item.new
     3.times do
@@ -14,6 +30,9 @@ class ItemsController < ApplicationController
   def edit
     @item.images.build
     render layout: 'no_menu' # レイアウトファイル指定
+  end
+
+  def show
   end
 
   def create
