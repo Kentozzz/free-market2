@@ -27,6 +27,9 @@ Rails.application.routes.draw do
 #   end
 #   resources :cards, only: [:index, :new]
 # end
-resources :cards, only: [:new, :index, :create, :destroy]
-
+resources :items, only: [:index, :new, :create, :show, :edit, :update, :destroy]  do
+  member do
+    get "purchase_confirmation"
+    post "purchase"  ## 追加
+  end
 end
