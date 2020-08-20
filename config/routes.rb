@@ -27,4 +27,6 @@ Rails.application.routes.draw do
 #   end
 #   resources :cards, only: [:index, :new]
 # end
+resources :cards, only: [:new, :index, :create, :destroy]
+
 end
