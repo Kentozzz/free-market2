@@ -1,35 +1,33 @@
-.items-wrapper.horizontal-padding-20
-  .items-wrapper__title
-  .items-wrapper__items
-    = render @items
-  = paginate(@items)
+.block.horizontal-padding-25
+  .block__menu
+    = @item.name
   .item-show
-    // ifを追加
     - if @item.deal != "販売中"
       = render partial: 'shared/sold_out', locals:{item: @item}
     .item-show__images-data
-      .item-images__main
-        .item-images__main-images
+      .item-images
+        .item-images__main
+          .item-images__main-images
+            - @item.images.each_with_index do |image, i|
+              = image_tag image.src.url, data: {big_image_index: i}
+        .item-images__mini-images
           - @item.images.each_with_index do |image, i|
-            = image_tag image.src.url, data: {big_image_index: i}
-      .item-images__mini-images
-        - @item.images.each_with_index do |image, i|
-          = image_tag image.src.url, data: {mini_image_index: i}
+            = image_tag image.src.url, data: {mini_image_index: i}
       %table.item-data
         %tr.item-data__row
           %th.item-data__row--title
             出品者
+          %td.item-data__row--value
+            = @item.seller.nickname
+        %tr.item-data__row
           %th.item-data__row--title
             カテゴリ
-          %tr.item-data__row
-            %th.item-data__row--title
-              カテゴリ
-            %td.item-data__row--value
-              = link_to "#{@item.category.root.name}", category_path(@item.category.root)  ## パスを設定
-              %br
-              = link_to ">#{@item.category.parent.name}", category_path(@item.category.parent)  ## パスを設定
-              %br
-              = link_to ">#{@item.category.name}", category_path(@item.category)  ## パスを設定
+          %td.item-data__row--value
+            = link_to "#{@item.category.root.name}", category_path(@item.category.root)
+            %br
+            = link_to ">#{@item.category.parent.name}", category_path(@item.category.parent)
+            %br
+            = link_to ">#{@item.category.name}", category_path(@item.category)
         %tr.item-data__row
           %th.item-data__row--title
             商品の状態

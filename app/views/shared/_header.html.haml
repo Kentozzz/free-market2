@@ -13,25 +13,6 @@
         = link_to categories_path do
           = icon "fas", "list", class:"header-bottom-left__button--red"
           カテゴリーから探す
-        -# .category-lists
-        -#   -# ↓親カテゴリの表示ここから↓
-        -#   .category-lists__list.parent
-        -#     - Category.roots.each do |parent_category|
-        -#       = link_to root_path, class:"category-lists__list--category" do
-        -#         = parent_category.name
-        -#       -# ↑親カテゴリの表示ここまで↑
-        -#       -# ↓子カテゴリの表示ここから↓
-        -#       .category-lists__list.child
-        -#         - parent_category.get_children.each do |child_category|
-        -#           = link_to root_path(child_category), class:"category-lists__list--category" do
-        -#             = child_category.name
-        -#           -# ↑子カテゴリの表示ここまで↑
-        -#           -# ↓孫カテゴリの表示ここから↓
-        -#           .category-lists__list.grand-child
-        -#             - child_category.get_children.each do |grandchild_category|
-        -#               = link_to root_path, class:"category-lists__list--category" do
-        -#                 = grandchild_category.name
-        -#                 -# ↑孫カテゴリの表示ここまで↑
       .header-bottom-left__button
         = link_to "" do
           = icon "fas", "tags", class:"header-bottom-left__button--red"
@@ -56,7 +37,7 @@
             = image_tag 'user_noimage.png', class:"header-bottom-right__mypage"
             マイページ
       - else
-        = link_to users_select_path,  data: {turbolinks: :false} do
+        = link_to users_select_path,  data: {turbolinks: :false} do  ## ここを変更
           新規会員登録
         = link_to new_user_session_path, data: {turbolinks: :false}  do
           ログイン

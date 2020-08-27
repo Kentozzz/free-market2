@@ -1,10 +1,22 @@
 class Item < ApplicationRecord
   validates :name, :price, :detail, :condition, :delivery_fee_payer, :delivery_method, :delivery_days, :deal, presence: true
   validates :price, numericality:{greater_than_or_equal_to: 300, less_than_or_equal_to: 9999999}
-  belongs_to :category
+  validates :images, length: { minimum: 1, maximum: 5, message: "の数が不正です" }  ## 追加
+
   extend ActiveHash::Associations::ActiveRecordExtensions
   belongs_to_active_hash :prefecture
-  
+  belongs_to :category
+  belongs_to :seller, class_name: "User"
+  belongs_to :buyer, class_name: "User", optional: :true
+  has_many :images, dependent: :destroy  
+  accepts_nested_attributes_for :images, allow_destroy: true, update_only: true
+
+  scope :new_items, -> { order("created_at DESC").limit(4) }
+
+  def self.search_by_categories(category_ids)
+    return Item.where(category_id: category_ids).includes(:images)
+  end
+
   enum condition:{
     "新品、未使用": 0,
     "未使用に近い": 1,
@@ -41,12 +53,4 @@ class Item < ApplicationRecord
     "販売中": 0,
     "売り切れ": 1
     }
-
-
-    scope :new_items, -> { order("created_at DESC").limit(4) }
-
-    def self.search_by_categories(category_ids)
-      return Item.where(category_id: category_ids).includes(:images)
-    end
-  
 end

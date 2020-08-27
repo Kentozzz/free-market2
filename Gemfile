@@ -47,7 +47,6 @@ group :development do
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
-  gem 'unicorn', '5.4.1'
 
   gem 'capistrano'
   gem 'capistrano-rbenv'
@@ -72,13 +71,16 @@ gem 'haml-rails'
 gem 'sassc', '2.1.0'
 gem 'font-awesome-sass'
 gem 'unicorn', '5.4.1'
+group :production do
+  gem 'unicorn', '5.4.1'
+end
 gem 'recaptcha', '>= 5.4.1',  require: "recaptcha/rails"
 gem 'omniauth-google-oauth2'
 gem 'omniauth-rails_csrf_protection'
 gem 'active_hash'
+gem 'activerecord-import'
 gem 'carrierwave'
 gem 'mini_magick'
-gem 'activerecord-import'
 gem 'fog-aws'
 gem 'ancestry'
 gem 'kaminari'

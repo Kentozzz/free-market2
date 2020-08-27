@@ -1,7 +1,7 @@
 .block
   .block__menu
     商品の情報を入力
-= form_with model: @item, local: true, html: {id: "item_form"} do |f|
+= form_with model: @item, local: true, html: {id: "item_form"} do |f|  ## ここにmodel: @itemを追加
   .block.horizontal-padding-5
     .input-field
       .input-field-main
@@ -12,19 +12,23 @@
         最大5枚までアップロードできます。
         #selected-item-images
           -# 商品編集の際はプレビューを表示
-          - if false
-            .item-image{data: {index: 0}}
-              = image_tag "", class: "item-image__image"
-              .item-image__buttons
-                .item-image__buttons--edit
-                  編集
-                .item-image__buttons--delete
-                  削除
+          - @item.images.each_with_index do |image, i|
+            -if image.persisted?
+              .item-image{data: {index: i}}
+                = image_tag image.src.url, class: "item-image__image"
+                .item-image__buttons
+                  .item-image__buttons--edit
+                    編集
+                  .item-image__buttons--delete
+                    削除
           #select-image-button
             #select-image-button__text
               クリックしてファイルをアップロード
     #image-file-fields
-      = file_field_tag :hoge, class: "new-item-image", id: "file_field_index_0", accept: "image/*", data: {index: 0}
+      = f.fields_for :images do |image|
+        = image.file_field :src, accept: "image/*", class: "new-item-image", data: {index: image.index}
+        - if image.object.persisted?
+          = image.check_box :_destroy, include_hidden: false
     .error-field{data:{column_name: "item_images"}}
   .block.horizontal-padding-5
     .input-field
@@ -52,9 +56,13 @@
         = f.label :category_id, "カテゴリ"
         %span.required-true
           必須
-        = f.collection_select :category_id, Category.all, :id, :name, {include_blank: "---"}, required: true, class: "select-category", id: "parent-category"
+        // selected: @item.category&.root_idを追加
+        = f.collection_select :category_id, Category.roots, :id, :name, {include_blank: "---", selected: @item.category&.root_id}, required: true, class: "select-category", id: "parent-category"
+        - if @item.category.present?
+          // selected: @item.category.parent_idを追加
+          = f.collection_select :category_id, @item.category.parent.siblings, :id, :name, {include_blank: "---", selected: @item.category.parent_id}, required: true, class: "select-category"
+          = f.collection_select :category_id, @item.category.siblings, :id, :name, {include_blank: "---"}, required: true, class: "select-category"
         .error-field{data:{column_name: "category"}}
-
         = f.label :condition, "商品の状態"
         %span.required-true
           必須
@@ -85,14 +93,14 @@
         %span.required-true
           必須
         %br
-        = f.collection_select :prefecture_id, Prefecture.all, :id, :name, {include_blank: "---"}, required: true, placeholder: "発送元の地域"
+        = f.collection_select :prefecture_id, Prefecture.all, :id , :name, {include_blank: "---"}, required: true, placeholder: "発送元の地域"
         .error-field{data:{column_name: "delivery_agency"}}
         %br
         = f.label :delivery_days, "発送までの日数"
         %span.required-true
           必須
         %br
-        = f.select :delivery_days, Item.delivery_days, {include_blank: "---"}
+        = f.select :delivery_days, Item.delivery_days.keys, {include_blank: "---"}
         .error-field{data:{column_name: "delivery_days"}}
   .block.horizontal-padding-5
     .input-field
@@ -130,10 +138,11 @@
         また、出品をもちまして加盟店規約に同意したことになります。
   .block.horizontal-padding-5
     = f.submit "出品する", class:"button back-red font-white"
-    = link_to item_path(@item), method: :delete do
-      .button.back-gray
-        商品を削除する
-    .horizontal-padding-25
-      = link_to "" do
+    - if action_name == 'edit'
+      = link_to item_path(@item), method: :delete do
         .button.back-gray
-          戻る
+          商品を削除する
+      .horizontal-padding-25
+        = link_to "" do
+          .button.back-gray
+            戻る

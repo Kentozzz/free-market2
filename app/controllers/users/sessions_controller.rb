@@ -6,12 +6,13 @@ class Users::SessionsController < Devise::SessionsController
 
   # GET /resource/sign_in
   def new
+    session.delete(:"devise.sns_auth")
     @auth_text ="でログイン"
     super
   end
 
   # POST /resource/sign_in
-  # def create 
+  # def create
   #   super
   # end
 

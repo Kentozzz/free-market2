@@ -1,7 +1,7 @@
 class ItemsController < ApplicationController
   skip_before_action :authenticate_user!, only: [:index, :show]
-  before_action :set_item, only: [:show, :edit, :update, :destroy, :purchase_confirmation]
   before_action :set_item, only: [:show, :edit, :update, :destroy, :purchase_confirmation, :purchase]
+  before_action :user_is_not_seller, only: [:edit, :update, :destroy]
   before_action :sold_item, only: [:edit, :update, :destroy, :purchase_confirmation, :purchase]
   before_action :user_is_seller, only: [:purchase_confirmation, :purchase]
 
@@ -19,22 +19,15 @@ class ItemsController < ApplicationController
        {category: mens_category, items: mens_items},
        {category: kids_category, items: kids_items}
       ]
-    end
-
-  def new
-    @item = Item.new
-    3.times do
-      @item.images.build
-    end
-    render layout: 'no_menu' # レイアウトファイルを指定
-  end
-
-  def edit
-    @item.images.build
-    render layout: 'no_menu' # レイアウトファイル指定
   end
 
   def show
+  end
+
+  def new
+    @item = Item.new
+    @item.images.build
+    render layout: 'no_menu' # レイアウトファイルを指定
   end
 
   def create
@@ -42,11 +35,15 @@ class ItemsController < ApplicationController
     if @item.save
       redirect_to root_path, notice: "出品に成功しました"
     else
-      render layout: 'no_menu', template: 'items/new' # レイアウトファイル指定
       redirect_to new_item_path, alert: @item.errors.full_messages  ## ここを変更
     end
   end
-  
+ 
+  def edit
+    @item.images.build
+    render layout: 'no_menu' # レイアウトファイル指定
+  end
+
   def update
     @item = Item.find(params[:id])
     if @item.update(item_params)
@@ -67,7 +64,6 @@ class ItemsController < ApplicationController
   def purchase_confirmation
     @card = Card.get_card(current_user.card.customer_token) if current_user.card
     render layout: 'no_menu' # レイアウトファイル指定
-    def purchase
   end
 
   def purchase
@@ -81,17 +77,7 @@ class ItemsController < ApplicationController
     )
     @item.update(deal: "売り切れ")
     redirect_to item_path(@item), notice: "商品を購入しました"
-    ## -----追加ここまで-----
   end
-  
-  def sold_item
-    redirect_to root_path, alert: "売り切れです" if @item.deal != "販売中"
-  end
-
-  def user_is_seller
-    redirect_to root_path, alert: "自分で出品した商品は購入できません" if @item.seller_id == current_user.id
-  end
-
 
   private
   def item_params
@@ -104,13 +90,21 @@ class ItemsController < ApplicationController
       :delivery_method,
       :delivery_days,
       :prefecture_id,
-      :category_id
-      image_attributes: [:src, :id, :_destroy]
+      :category_id,
+      images_attributes: [:src, :id, :_destroy]  ##  追加
       ).merge(seller_id: current_user.id)
   end
 
   def set_item
     @item = Item.find(params[:id])
+  end
+
+  def sold_item
+    redirect_to root_path, alert: "売り切れです" if @item.deal != "販売中"
+  end
+
+  def user_is_seller
+    redirect_to root_path, alert: "自分で出品した商品は購入できません" if @item.seller_id == current_user.id
   end
 
   def user_is_not_seller

@@ -40,16 +40,23 @@
     %br
     #{current_user.last_name} #{current_user.first_name}
   .block__menu-right
-    = link_to cards_path, data: {turbolinks: false} do
+    = link_to "" do
       変更する >
 .block.horizontal-padding-25
-    .block__menu-left
+  .block__menu-left
     支払い方法
   .block__main
     #card-data
       - if @card
         = "************" + @card[:last4]
+        %br
+        = @card[:exp_month]
+        \/
+        = @card[:exp_year]
+        %br
+        = @card[:brand]
+      - else
         \/
   .block__menu-right
-    = link_to "", data: {turbolinks: false} do
+    = link_to cards_path, data: {turbolinks: false} do
       変更する >
